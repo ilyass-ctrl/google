@@ -1,3 +1,6 @@
+/*
+ * searchFunction testing.
+ */
 package ca.google;
 
 import org.openqa.selenium.WebDriver;
