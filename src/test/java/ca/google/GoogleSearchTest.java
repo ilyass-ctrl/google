@@ -3,11 +3,15 @@ package ca.google;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeTest;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.annotations.AfterTest;
 
@@ -17,27 +21,32 @@ public class GoogleSearchTest {
 	SearchPage searchPage = null;
 
 	@BeforeTest
-	public void setup() {
+	public void setup () throws IOException {
+		Properties browserConfigProps = new Properties();
+		FileInputStream fis = new FileInputStream("config.cfg");
 
-		System.setProperty("webdriver.chrome.driver", "C:\\Users\\Saighi Ilyass\\Desktop\\Automation\\WebDrivers\\chromedriver.exe");
-		
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("start-maximized");
-		driver = new ChromeDriver(options);
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		
-		driver.get("https://www.google.ca/");
-		searchPage = PageFactory.initElements(driver, SearchPage.class);
-	}
+		browserConfigProps.load(fis);
+		String browserType = browserConfigProps.getProperty("browser");
 
-	@AfterTest
-	public void tearDown() {
-		driver.close();
-	}
+		if (browserType.equalsIgnoreCase("CHROME")) {
+			System.setProperty("webdriver.chrome.driver", "C:\\Users\\Saighi Ilyass\\Desktop\\Automation\\WebDrivers\\chromedriver.exe");
+			driver = new ChromeDriver();
+		}else if(browserType.equalsIgnoreCase("FIREFOX")) {
+			System.setProperty("webdriver.chrome.driver", "C:\\Users\\Saighi Ilyass\\Desktop\\Automation\\WebDrivers\\geckodriver.exe");
+			driver = new FirefoxDriver();
+		}
+	driver.get("https://www.google.ca/");
+	searchPage = PageFactory.initElements(driver, SearchPage.class);
+}
 
-	@Test
-	public void searchFunctionTest() {
-		searchPage.search("wolf wallpapers 4k");
-	}
+@AfterTest
+public void tearDown() {
+	driver.close();
+}
+
+@Test
+public void searchFunctionTest() {
+	searchPage.search("wolf wallpapers 4k");
+}
 
 }
